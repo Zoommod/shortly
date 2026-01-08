@@ -44,8 +44,7 @@ public class UrlShortenerService : IUrlShortenerService
     public async Task<string> ObterUrlOriginalAsync(string codigo)
     {
         var mapeamento = await _context.UrlMappings.FirstOrDefaultAsync(u => u.Code == codigo);
-        
-        if(mapeamento == null) return null;
+        if (mapeamento == null) return null;
 
         mapeamento.ClickCount++;
         await _context.SaveChangesAsync();
