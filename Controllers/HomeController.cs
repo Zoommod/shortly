@@ -1,24 +1,54 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using Shorty.Web.Models;
+using Shorty.Web.Services;
 
 namespace Shorty.Web.Controllers;
 
 public class HomeController : Controller
 {
+    private readonly IUrlShortenerService _service;
+
+    public HomeController(IUrlShortenerService service)
+    {
+        _service = service;
+    }
+
     public IActionResult Index()
     {
         return View();
     }
 
-    public IActionResult Privacy()
+    [HttpPost]
+    public async Task<IActionResult> Encurtar(string urlOriginal)
     {
-        return View();
+        if (string.IsNullOrEmpty(urlOriginal))
+        {
+            ViewBag.Erro = "A URL é obrigatória!";
+            return View("Index");
+        }
+
+        var codigo = await _service.EncurtarUrlAsync(urlOriginal);
+
+        var dominio = $"{Request.Scheme}://{Request.Host}";
+        var urlCurta = $"{dominio}/{codigo}";
+
+        ViewBag.UrlCurta = urlCurta;
+        ViewBag.UrlOriginal = urlOriginal;
+
+        return View("Index");
     }
 
-    [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-    public IActionResult Error()
+    [HttpGet("/{codigo}")]
+    public async Task<IActionResult> Redirecionar(string codigo)
     {
-        return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+        var urlOriginal = await _service.ObterUrlOriginalAsync(codigo);
+
+        if(urlOriginal == null)
+        {
+            return NotFound();
+        }
+
+        return Redirect(urlOriginal);
     }
 }
