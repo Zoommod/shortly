@@ -53,6 +53,26 @@ public class UrlShortenerService : IUrlShortenerService
         return mapeamento.OriginalUrl;
     }
 
+    private async Task<string> GerarCodigoUnicoAsync()
+    {
+        while (true)
+        {
+            char[] chars = new char[6];
+            for (int i = 0; i < 6; i++)
+            {
+                chars[i] = CaracteresPermitidos[_random.Next(CaracteresPermitidos.Length)];
+            }
+            var codigoGerado = new string(chars);
+
+            bool existe = await _context.UrlMappings.AnyAsync(u => u.Code == codigoGerado);
+
+            if (!existe)
+            {
+                return codigoGerado;
+            }
+        }
+    }
+
 
 
 
