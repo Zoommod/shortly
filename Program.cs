@@ -13,6 +13,23 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 builder.Services.AddScoped<IUrlShortenerService, UrlShortenerService>();
 
 var app = builder.Build();
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    try
+    {
+        var context = services.GetRequiredService<Shorty.Web.Data.AppDbContext>();
+        
+        // Aplica qualquer migration pendente (cria as tabelas se não existirem)
+        context.Database.Migrate(); 
+        Console.WriteLine("Banco de dados migrado com sucesso!");
+    }
+    catch (Exception ex)
+    {
+        var logger = services.GetRequiredService<ILogger<Program>>();
+        logger.LogError(ex, "Um erro ocorreu ao migrar o banco de dados.");
+    }
+}
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
