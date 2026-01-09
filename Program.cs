@@ -1,3 +1,5 @@
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.EntityFrameworkCore;
 using Shorty.Web.Data;
 using Shorty.Web.Services;
@@ -12,6 +14,18 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     
 builder.Services.AddScoped<IUrlShortenerService, UrlShortenerService>();
 
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = GoogleDefaults.AuthenticationScheme;
+})
+.AddCookie()
+.AddGoogle(options =>
+{
+    options.ClientId = builder.Configuration["Google:ClientId"];
+    options.ClientSecret = builder.Configuration["Google:ClientSecret"];
+});
+
 var app = builder.Build();
 using (var scope = app.Services.CreateScope())
 {
@@ -20,7 +34,6 @@ using (var scope = app.Services.CreateScope())
     {
         var context = services.GetRequiredService<Shorty.Web.Data.AppDbContext>();
         
-        // Aplica qualquer migration pendente (cria as tabelas se não existirem)
         context.Database.Migrate(); 
         Console.WriteLine("Banco de dados migrado com sucesso!");
     }
@@ -41,6 +54,8 @@ if (!app.Environment.IsDevelopment())
 
 //app.UseHttpsRedirection();
 app.UseRouting();
+
+app.UseAuthentication();
 
 app.UseAuthorization();
 
