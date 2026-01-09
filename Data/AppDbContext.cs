@@ -11,6 +11,7 @@ public class AppDbContext : DbContext
         
     }
     public DbSet<UrlMappings> UrlMappings { get; set; }
+    public DbSet<UrlAcessLog> UrlAcessLogs { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     { 

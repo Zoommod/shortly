@@ -41,13 +41,32 @@ public class UrlShortenerService : IUrlShortenerService
         return codigo;
     }
 
-    public async Task<string> ObterUrlOriginalAsync(string codigo)
+    public async Task<string?> ObterUrlOriginalAsync(string codigo, string? ip = null, string? userAgent = null)
     {
         var mapeamento = await _context.UrlMappings.FirstOrDefaultAsync(u => u.Code == codigo);
         if (mapeamento == null) return null;
 
         mapeamento.ClickCount++;
-        await _context.SaveChangesAsync();
+
+        var log = new UrlAcessLog
+        {
+            UrlMappingId = mapeamento.Id,
+            DataAcesso = DateTime.UtcNow,
+            IpAdress = ip,
+            UserAgent = userAgent
+        };
+
+        _context.UrlAcessLogs.Add(log);
+
+        try
+        {
+            await _context.SaveChangesAsync();
+        }
+        catch
+        {
+            
+        }
+        
 
         return mapeamento.OriginalUrl;
     }
