@@ -1,0 +1,80 @@
+@model IEnumerable<Shorty.Web.Models.UrlMappings>
+
+@{
+    ViewData["Title"] = "Meus Links";
+}
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="text-primary fw-bold">Meus Links</h2>
+        <a asp-action="Index" class="btn btn-primary fw-bold shadow-sm">+ Novo Link</a>
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-light border text-center p-5 shadow-sm rounded">
+            <h4 class="text-muted">Você ainda não tem links encurtados.</h4>
+            <p class="mb-3">Que tal criar o seu primeiro agora?</p>
+            <a asp-action="Index" class="btn btn-outline-primary">Encurtar Link</a>
+        </div>
+    }
+    else
+    {
+        <div class="card shadow-lg border-0 overflow-hidden">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="bg-light text-secondary">
+                        <tr>
+                            <th scope="col" class="ps-4 py-3">Link Original</th>
+                            <th scope="col">Link Curto</th>
+                            <th scope="col" class="text-center">Cliques</th>
+                            <th scope="col" class="text-end pe-4">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td class="ps-4">
+                                    <div class="text-truncate text-muted" style="max-width: 250px;" title="@item.OriginalUrl">
+                                        @item.OriginalUrl
+                                    </div>
+                                </td>
+                                <td>
+                                    <a href="/@item.Code" target="_blank" class="fw-bold text-decoration-none text-primary">
+                                        /@item.Code
+                                    </a>
+                                </td>
+                                <td class="text-center">
+                                    <span class="badge bg-success rounded-pill px-3 py-2">
+                                        @item.ClickCount
+                                    </span>
+                                </td>
+                                <td class="text-end pe-4">
+                                    <button class="btn btn-sm btn-outline-secondary me-2" onclick="copiarLink('@item.Code')">
+                                        📋 Copiar
+                                    </button>
+
+                                    <button class="btn btn-sm btn-info text-white" disabled title="Gráficos em breve!">
+                                        📊 Analytics
+                                    </button>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+</div>
+
+<script>
+    function copiarLink(codigo) {
+        const urlCompleta = window.location.origin + "/" + codigo;
+
+        navigator.clipboard.writeText(urlCompleta).then(() => {
+            // Um feedback visual simples (pode ser melhorado depois)
+            alert("Link copiado: " + urlCompleta);
+        });
+    }
+</script>
