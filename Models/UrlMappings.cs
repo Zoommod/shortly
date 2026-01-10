@@ -14,4 +14,5 @@ public class UrlMappings
     public string Code { get; set; }
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public int ClickCount { get; set;} = 0;
+    public string? UserId { get; set; }
 }

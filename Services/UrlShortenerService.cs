@@ -16,15 +16,8 @@ public class UrlShortenerService : IUrlShortenerService
         _context = context;
     }
 
-    public async Task<string> EncurtarUrlAsync(string urlOriginal)
+    public async Task<string> EncurtarUrlAsync(string urlOriginal, string? userId = null)
     {
-        var existente = await _context.UrlMappings.FirstOrDefaultAsync(u => u.OriginalUrl == urlOriginal);
-        
-        if(existente != null)
-        {
-            return existente.Code;
-        }
-
         var codigo = await GerarCodigoUnicoAsync();
 
         var novoMapeamento = new UrlMappings
@@ -32,7 +25,8 @@ public class UrlShortenerService : IUrlShortenerService
             OriginalUrl = urlOriginal,
             Code = codigo,
             CreatedAt = DateTime.UtcNow,
-            ClickCount = 0
+            ClickCount = 0,
+            UserId = userId
         };
 
         _context.UrlMappings.Add(novoMapeamento);
@@ -52,7 +46,7 @@ public class UrlShortenerService : IUrlShortenerService
         {
             UrlMappingId = mapeamento.Id,
             DataAcesso = DateTime.UtcNow,
-            IpAdress = ip,
+            IpAddress = ip,
             UserAgent = userAgent
         };
 
@@ -91,7 +85,9 @@ public class UrlShortenerService : IUrlShortenerService
         }
     }
 
-
-
+    public async Task<List<UrlMappings>> ObterLinksPorUsuarioAsync(string userId)
+    {
+        return await _context.UrlMappings.Where(u => u.UserId == userId).OrderByDescending(u => u.Id).ToListAsync();
+    }
 
 }
