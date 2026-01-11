@@ -41,26 +41,31 @@ public class UrlShortenerService : IUrlShortenerService
         if (mapeamento == null) return null;
 
         mapeamento.ClickCount++;
-
-        var log = new UrlAcessLog
-        {
-            UrlMappingId = mapeamento.Id,
-            DataAcesso = DateTime.UtcNow,
-            IpAddress = ip,
-            UserAgent = userAgent
-        };
-
-        _context.UrlAcessLogs.Add(log);
+        
+        await _context.SaveChangesAsync(); 
 
         try
         {
+            var log = new UrlAcessLog
+            {
+                UrlMappingId = mapeamento.Id,
+                DataAcesso = DateTime.UtcNow,
+                IpAddress = ip,
+                UserAgent = userAgent
+            };
+
+            _context.UrlAcessLogs.Add(log);
+            
             await _context.SaveChangesAsync();
         }
-        catch
+        catch (Exception ex)
         {
-            
+            Console.WriteLine($"ERRO AO SALVAR LOG: {ex.Message}");
+            if (ex.InnerException != null)
+            {
+                Console.WriteLine($"DETALHE DO ERRO: {ex.InnerException.Message}");
+            }
         }
-        
 
         return mapeamento.OriginalUrl;
     }
