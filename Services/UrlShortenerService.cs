@@ -95,4 +95,9 @@ public class UrlShortenerService : IUrlShortenerService
         return await _context.UrlMappings.Where(u => u.UserId == userId).OrderByDescending(u => u.Id).ToListAsync();
     }
 
+    public async Task<UrlMappings?> ObterDetalhesComLogsAsync(int id)
+    {
+        return await _context.UrlMappings.Include(u => u.UrlAcessLogs).FirstOrDefaultAsync(u => u.Id == id);
+    }
+
 }

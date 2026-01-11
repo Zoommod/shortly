@@ -15,4 +15,5 @@ public class UrlMappings
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public int ClickCount { get; set;} = 0;
     public string? UserId { get; set; }
+    public  ICollection<UrlAcessLog> UrlAcessLogs { get; set; } = new List<UrlAcessLog>();
 }

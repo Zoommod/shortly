@@ -75,4 +75,20 @@ public class HomeController : Controller
         var meusLinks = await _service.ObterLinksPorUsuarioAsync(userId);
         return View(meusLinks);
     }
+
+    [Authorize]
+    public async Task<IActionResult> Analytics(int id)
+    {
+        var urlDetails = await _service.ObterDetalhesComLogsAsync(id);
+
+        if(urlDetails == null) return NotFound();
+
+        var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+        if(urlDetails.UserId != userId)
+        {
+            return Forbid();
+        }
+
+        return View(urlDetails);
+    }
 }
