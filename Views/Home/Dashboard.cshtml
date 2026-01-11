@@ -18,9 +18,9 @@
             <a asp-action="Index" class="btn btn-outline-primary">Encurtar Link</a>
         </div>
     }
-    else
+else
     {
-        <div class="card shadow-lg border-0 overflow-hidden">
+        <div class="card shadow-lg border-0 overflow-hidden d-none d-md-block">
             <div class="table-responsive">
                 <table class="table table-hover align-middle mb-0">
                     <thead class="bg-light text-secondary">
@@ -52,19 +52,10 @@
                                 </td>
                                 <td class="text-end pe-4">
                                     <div class="d-flex justify-content-end gap-2">
-                                        <button class="btn btn-sm btn-outline-secondary" onclick="copiarLink('@item.Code')" title="Copiar Link">
-                                            📋
-                                        </button>
-                                        
-                                        <a asp-action="Analytics" asp-route-id="@item.Id" class="btn btn-sm btn-info text-white" title="Ver Gráficos">
-                                            📊
-                                        </a>
-
-                                        <form asp-action="Excluir" asp-route-id="@item.Id" method="post" 
-                                            onsubmit="return confirm('Tem certeza que deseja excluir este link?');">
-                                            <button type="submit" class="btn btn-sm btn-danger text-white" title="Excluir Link">
-                                                🗑️
-                                            </button>
+                                        <button class="btn btn-sm btn-outline-secondary" onclick="copiarLink('@item.Code')" title="Copiar Link">📋</button>
+                                        <a asp-action="Analytics" asp-route-id="@item.Id" class="btn btn-sm btn-info text-white" title="Ver Gráficos">📊</a>
+                                        <form asp-action="Excluir" asp-route-id="@item.Id" method="post" onsubmit="return confirm('Tem certeza?');">
+                                            <button type="submit" class="btn btn-sm btn-danger text-white" title="Excluir Link">🗑️</button>
                                         </form>
                                     </div>
                                 </td>
@@ -73,6 +64,44 @@
                     </tbody>
                 </table>
             </div>
+        </div>
+
+        <div class="d-block d-md-none">
+            @foreach (var item in Model)
+            {
+                <div class="card shadow-sm mb-3 border-0">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <a href="/@item.Code" target="_blank" class="fw-bold text-decoration-none fs-5 text-primary">
+                                /@item.Code
+                            </a>
+                            <span class="badge bg-success rounded-pill">
+                                @item.ClickCount 👆
+                            </span>
+                        </div>
+
+                        <p class="text-muted small text-truncate mb-3 border-bottom pb-2">
+                            🔗 @item.OriginalUrl
+                        </p>
+
+                        <div class="d-grid gap-2 d-flex justify-content-between">
+                            <button class="btn btn-outline-secondary flex-grow-1" onclick="copiarLink('@item.Code')">
+                                📋 Copiar
+                            </button>
+                            
+                            <a asp-action="Analytics" asp-route-id="@item.Id" class="btn btn-info text-white">
+                                📊
+                            </a>
+
+                            <form asp-action="Excluir" asp-route-id="@item.Id" method="post" onsubmit="return confirm('Tem certeza?');">
+                                <button type="submit" class="btn btn-danger text-white w-100">
+                                    🗑️
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            }
         </div>
     }
 </div>

@@ -2,66 +2,109 @@
     ViewData["Title"] = "Home Page";
 }
 
-<div class="container mt-4 mt-md-5"> <div class="row justify-content-center">
-        <div class="col-12 col-md-8 col-lg-6 text-center">
-            
-            <h1 class="display-4 fw-bold text-primary mb-3 d-flex align-items-center justify-content-center">
-                <a href="">
-                    <img src="~/images/logo.png" alt="Logo Shorty" class="img-fluid me-3" style="max-height: 3em; width: auto;" />
-                </a>
-            </h1>
+<div class="text-center mt-5">
+    <div class="mb-4">
+        <h1 class="display-4 fw-bold text-primary">
+            <i class="bi bi-link-45deg"></i> Shorty
+        </h1>
+        <p class="lead text-muted">
+            Transforme links gigantes em atalhos curtos e elegantes.
+        </p>
+    </div>
 
-            <p class="lead text-muted mb-4 mb-md-5">
-                Transforme links gigantes em atalhos curtos e elegantes.
-            </p>
-
-            <div class="card shadow-lg border-0">
-                <div class="card-body p-4 p-md-5">
-                    
-                    <form asp-action="Encurtar" method="post">
-                        <div class="input-group input-group-lg shadow-sm">
-                            <span class="input-group-text bg-white border-end-0 text-primary">
-                                🔗 
-                            </span>
-                            
-                            <input type="url" 
-                                   name="urlOriginal" 
-                                   class="form-control border-start-0" 
-                                   placeholder="Cole sua URL longa..." 
-                                   required 
-                                   value="@ViewBag.UrlOriginal" />
-                            
-                            <button type="submit" class="btn btn-primary fw-bold">
-                                Encurtar
-                            </button>
-                        </div>
-                    </form>
-
-                </div>
+    <div class="card shadow-sm border-0 p-4 mx-auto" style="max-width: 600px;">
+        <form asp-controller="Home" asp-action="Encurtar" method="post">
+            <div class="input-group input-group-lg">
+                <span class="input-group-text bg-light border-end-0">
+                    🔗
+                </span>
+                
+                <input type="text" 
+                       name="urlOriginal" 
+                       class="form-control border-start-0" 
+                       placeholder="Cole sua URL aqui" 
+                       required
+                       style="font-size: 0.95rem;" 
+                       value="@ViewBag.UrlOriginal" />
+                       
+                <button type="submit" class="btn btn-primary fw-bold px-4">
+                    Encurtar
+                </button>
             </div>
-
-            @if (ViewBag.UrlCurta != null)
-            {
-                <div class="alert alert-success mt-4 p-3 p-md-4 shadow-sm fade show" role="alert">
-                    <h4 class="alert-heading mb-3 fs-5 fs-md-4">Seu link está pronto! 🎉</h4>
-                    
-                    <div class="bg-white p-3 rounded border text-center">
-                        <a href="@ViewBag.UrlCurta" target="_blank" class="fs-5 fs-md-4 fw-bold text-decoration-none text-success text-break">
-                            @ViewBag.UrlCurta
-                        </a>
-                    </div>
-                    
-                    <p class="mb-0 mt-2 text-muted small">Clique no link acima para testar</p>
-                </div>
-            }
-
+            
             @if (ViewBag.Erro != null)
             {
-                <div class="alert alert-danger mt-3 fade show text-break">
-                    ⚠️ @ViewBag.Erro
+                <div class="text-danger mt-2 small text-start">
+                    <i class="bi bi-exclamation-circle"></i> @ViewBag.Erro
                 </div>
             }
-
-        </div>
+        </form>
     </div>
+
+    @if (ViewBag.UrlCurta != null)
+    {
+        <div class="alert alert-success mt-4 p-4 shadow-sm mx-auto position-relative" style="max-width: 600px;">
+            <h5 class="alert-heading fw-bold mb-3" id="tituloResultado">
+                Seu link está pronto! 🎉
+            </h5>
+            
+            <div class="bg-white p-3 rounded border d-flex align-items-center justify-content-center">
+                <a href="@ViewBag.UrlCurta" 
+                   target="_blank" 
+                   id="linkGerado"
+                   class="fw-bold text-success text-decoration-none fs-5 text-break user-select-none">
+                    @ViewBag.UrlCurta
+                </a>
+            </div>
+            
+            <p class="mb-0 mt-2 small text-muted">
+                <i class="bi bi-hand-index-thumb"></i> Toque para copiar ou segure
+            </p>
+        </div>
+    }
 </div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const linkElement = document.getElementById("linkGerado");
+        const tituloElement = document.getElementById("tituloResultado");
+        let pressTimer;
+
+        if (linkElement) {
+            const copiarLink = (e) => {
+                e.preventDefault();
+                
+                const textoParaCopiar = linkElement.href;
+                
+                navigator.clipboard.writeText(textoParaCopiar).then(() => {
+                    const textoOriginal = tituloElement.innerText;
+                    tituloElement.innerText = "Copiado! ✅";
+                    tituloElement.classList.add("text-success");
+                    
+                    setTimeout(() => {
+                        tituloElement.innerText = textoOriginal;
+                    }, 2000);
+                }).catch(err => {
+                    console.error('Erro ao copiar: ', err);
+                });
+            };
+
+            linkElement.addEventListener("click", copiarLink);
+
+            linkElement.addEventListener("touchstart", (e) => {
+                pressTimer = setTimeout(() => {
+                    copiarLink(e);
+                    if (navigator.vibrate) navigator.vibrate(50);
+                }, 600);
+            });
+
+            linkElement.addEventListener("touchend", () => {
+                clearTimeout(pressTimer);
+            });
+            
+            linkElement.addEventListener("touchmove", () => {
+                clearTimeout(pressTimer);
+            });
+        }
+    });
+</script>
