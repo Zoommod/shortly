@@ -9,6 +9,6 @@ public class UrlAcessLog
     public string? IpAddress { get; set; }
     public string? UserAgent { get; set; }
     public int UrlMappingId { get; set; }
-    public UrlMappings urlMappings { get; set; } = null!;
+    public UrlMappings urlMapping { get; set; } = null!;
 
 }
