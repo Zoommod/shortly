@@ -47,17 +47,26 @@
                                 </td>
                                 <td class="text-center">
                                     <span class="badge bg-success rounded-pill px-3 py-2">
-                                        @item.ClickCount
+                                        @item.ClickCount 👆
                                     </span>
                                 </td>
                                 <td class="text-end pe-4">
-                                    <button class="btn btn-sm btn-outline-secondary me-2" onclick="copiarLink('@item.Code')">
-                                        📋 Copiar
-                                    </button>
+                                    <div class="d-flex justify-content-end gap-2">
+                                        <button class="btn btn-sm btn-outline-secondary" onclick="copiarLink('@item.Code')" title="Copiar Link">
+                                            📋
+                                        </button>
+                                        
+                                        <a asp-action="Analytics" asp-route-id="@item.Id" class="btn btn-sm btn-info text-white" title="Ver Gráficos">
+                                            📊
+                                        </a>
 
-                                    <a asp-action="Analytics" asp-route-id="@item.Id" class="btn btn-sm btn-info text-white fw-bold">
-                                        📊 Analytics
-                                    </a>
+                                        <form asp-action="Excluir" asp-route-id="@item.Id" method="post" 
+                                            onsubmit="return confirm('Tem certeza que deseja excluir este link?');">
+                                            <button type="submit" class="btn btn-sm btn-danger text-white" title="Excluir Link">
+                                                🗑️
+                                            </button>
+                                        </form>
+                                    </div>
                                 </td>
                             </tr>
                         }
