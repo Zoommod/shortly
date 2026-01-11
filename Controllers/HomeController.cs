@@ -91,4 +91,30 @@ public class HomeController : Controller
 
         return View(urlDetails);
     }
+
+    [Authorize]
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Excluir(int id)
+    {
+        var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+
+        if (string.IsNullOrEmpty(userId))
+        {
+            return RedirectToAction("Login", "Account");
+        }
+
+        var sucesso = await _service.ExcluirUrlAsync(id, userId);
+
+        if (sucesso)
+        {
+            TempData["Messagem"] = "Link excluído com sucesso!";
+        }
+        else
+        {
+            TempData["Erro"] = "Erro ao excluir o link. Tente novamente";
+        }
+
+        return RedirectToAction("Dashboard");
+    }
 }

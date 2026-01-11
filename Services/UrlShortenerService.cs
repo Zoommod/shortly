@@ -100,4 +100,18 @@ public class UrlShortenerService : IUrlShortenerService
         return await _context.UrlMappings.Include(u => u.UrlAcessLogs).FirstOrDefaultAsync(u => u.Id == id);
     }
 
+    public async Task<bool> ExcluirUrlAsync(int id, string userId)
+    {
+        var urlParaDeletar = await _context.UrlMappings.FirstOrDefaultAsync(u => u.Id == id);
+
+        if(urlParaDeletar == null || urlParaDeletar.UserId != userId){
+            return false;
+        }
+
+        _context.UrlMappings.Remove(urlParaDeletar);
+        await _context.SaveChangesAsync();
+
+        return true;
+    }
+
 }
