@@ -1,11 +1,13 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using Shorty.Web.Models;
 using Shorty.Web.Services;
 
 namespace Shorty.Web.Controllers;
 
+[EnableRateLimiting("Global")]
 public class HomeController : Controller
 {
     private readonly IUrlShortenerService _service;
@@ -21,6 +23,8 @@ public class HomeController : Controller
     }
 
     [HttpPost]
+    [ValidateAntiForgeryToken]
+    [EnableRateLimiting("CriacaoLinks")]
     public async Task<IActionResult> Encurtar(string urlOriginal)
     {
         if (string.IsNullOrEmpty(urlOriginal))
