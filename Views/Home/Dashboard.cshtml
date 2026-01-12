@@ -18,7 +18,7 @@
             <a asp-action="Index" class="btn btn-outline-primary">Encurtar Link</a>
         </div>
     }
-else
+    else
     {
         <div class="card shadow-lg border-0 overflow-hidden d-none d-md-block">
             <div class="table-responsive">
@@ -36,9 +36,19 @@ else
                         {
                             <tr>
                                 <td class="ps-4">
-                                    <div class="text-truncate text-muted" style="max-width: 250px;" title="@item.OriginalUrl">
-                                        @item.OriginalUrl
-                                    </div>
+                                    @if (!string.IsNullOrEmpty(item.Title))
+                                    {
+                                        <div class="fw-bold text-dark">@item.Title</div>
+                                        <div class="text-truncate text-muted small" style="max-width: 250px;" title="@item.OriginalUrl">
+                                            @item.OriginalUrl
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <div class="text-truncate text-muted" style="max-width: 250px;" title="@item.OriginalUrl">
+                                            @item.OriginalUrl
+                                        </div>
+                                    }
                                 </td>
                                 <td>
                                     <a href="/@item.Code" target="_blank" class="fw-bold text-decoration-none text-primary">
@@ -52,10 +62,34 @@ else
                                 </td>
                                 <td class="text-end pe-4">
                                     <div class="d-flex justify-content-end gap-2">
-                                        <button class="btn btn-sm btn-outline-secondary" onclick="copiarLink('@item.Code')" title="Copiar Link">📋</button>
-                                        <a asp-action="Analytics" asp-route-id="@item.Id" class="btn btn-sm btn-info text-white" title="Ver Gráficos">📊</a>
-                                        <form asp-action="Excluir" asp-route-id="@item.Id" method="post" onsubmit="return confirm('Tem certeza?');">
-                                            <button type="submit" class="btn btn-sm btn-danger text-white" title="Excluir Link">🗑️</button>
+                                        <button class="btn btn-sm btn-outline-secondary"
+                                                onclick="copiarLink('@item.Code')"
+                                                title="Copiar Link">
+                                            📋
+                                        </button>
+
+                                        <button class="btn btn-sm btn-warning text-white"
+                                                onclick="abrirModalRenomear(@item.Id, '@(item.Title ?? "")')"
+                                                title="Renomear">
+                                            ✏️
+                                        </button>
+
+                                        <a asp-action="Analytics"
+                                           asp-route-id="@item.Id"
+                                           class="btn btn-sm btn-info text-white"
+                                           title="Ver Gráficos">
+                                            📊
+                                        </a>
+
+                                        <form asp-action="Excluir"
+                                              asp-route-id="@item.Id"
+                                              method="post"
+                                              onsubmit="return confirm('Tem certeza?');">
+                                            <button type="submit"
+                                                    class="btn btn-sm btn-danger text-white"
+                                                    title="Excluir Link">
+                                                🗑️
+                                            </button>
                                         </form>
                                     </div>
                                 </td>
@@ -70,31 +104,71 @@ else
             @foreach (var item in Model)
             {
                 <div class="card shadow-sm mb-3 border-0">
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between align-items-center mb-2">
-                            <a href="/@item.Code" target="_blank" class="fw-bold text-decoration-none fs-5 text-primary">
-                                /@item.Code
-                            </a>
-                            <span class="badge bg-success rounded-pill">
+                    <div class="card-body p-3">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <div class="me-2 overflow-hidden">
+                                @if (!string.IsNullOrEmpty(item.Title))
+                                {
+                                    <h5 class="fw-bold text-dark mb-0 text-truncate">
+                                        @item.Title
+                                    </h5>
+                                    <a href="/@item.Code"
+                                       target="_blank"
+                                       class="text-primary text-decoration-none fw-bold small">
+                                        /@item.Code
+                                    </a>
+                                }
+                                else
+                                {
+                                    <h5 class="mb-0">
+                                        <a href="/@item.Code"
+                                           target="_blank"
+                                           class="fw-bold text-primary text-decoration-none">
+                                            /@item.Code
+                                        </a>
+                                    </h5>
+                                }
+                            </div>
+
+                            <span class="badge bg-success rounded-pill flex-shrink-0">
                                 @item.ClickCount 👆
                             </span>
                         </div>
 
-                        <p class="text-muted small text-truncate mb-3 border-bottom pb-2">
-                            🔗 @item.OriginalUrl
-                        </p>
+                        <div class="bg-light rounded p-2 mb-3 mt-2 border-start border-3 border-primary">
+                            <div class="text-muted small text-truncate">
+                                <small class="fw-bold text-uppercase" style="font-size: 0.65rem;">
+                                    Destino:
+                                </small>
+                                <br />
+                                @item.OriginalUrl
+                            </div>
+                        </div>
 
-                        <div class="d-grid gap-2 d-flex justify-content-between">
-                            <button class="btn btn-outline-secondary flex-grow-1" onclick="copiarLink('@item.Code')">
+                        <div class="d-flex gap-2">
+                            <button class="btn btn-outline-secondary flex-grow-1"
+                                    onclick="copiarLink('@item.Code')">
                                 📋 Copiar
                             </button>
-                            
-                            <a asp-action="Analytics" asp-route-id="@item.Id" class="btn btn-info text-white">
+
+                            <button class="btn btn-warning text-white px-3"
+                                    onclick="abrirModalRenomear(@item.Id, '@(item.Title ?? "")')"
+                                    title="Renomear">
+                                ✏️
+                            </button>
+
+                            <a asp-action="Analytics"
+                               asp-route-id="@item.Id"
+                               class="btn btn-info text-white px-3"
+                               title="Analytics">
                                 📊
                             </a>
 
-                            <form asp-action="Excluir" asp-route-id="@item.Id" method="post" onsubmit="return confirm('Tem certeza?');">
-                                <button type="submit" class="btn btn-danger text-white w-100">
+                            <form asp-action="Excluir"
+                                  asp-route-id="@item.Id"
+                                  method="post"
+                                  onsubmit="return confirm('Tem certeza?');">
+                                <button type="submit" class="btn btn-danger text-white px-3">
                                     🗑️
                                 </button>
                             </form>
@@ -104,15 +178,57 @@ else
             }
         </div>
     }
+
+    <div class="modal fade" id="modalRenomear" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <form asp-action="Renomear" method="post">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Renomear Link</h5>
+                        <button type="button"
+                                class="btn-close"
+                                data-bs-dismiss="modal"
+                                aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <input type="hidden" name="id" id="modalIdUrl" />
+
+                        <div class="mb-3">
+                            <label for="novoTitulo" class="form-label">
+                                Dê um nome para este link:
+                            </label>
+                            <input type="text"
+                                   class="form-control"
+                                   name="novoTitulo"
+                                   id="modalNovoTitulo"
+                                   placeholder="Ex: Meu Portfólio, Promoção de Natal..."
+                                   maxlength="100" />
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button"
+                                class="btn btn-secondary"
+                                data-bs-dismiss="modal">
+                            Cancelar
+                        </button>
+                        <button type="submit" class="btn btn-primary">
+                            Salvar
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 </div>
 
 <script>
-    function copiarLink(codigo) {
-        const urlCompleta = window.location.origin + "/" + codigo;
+    function abrirModalRenomear(id, tituloAtual) {
+        document.getElementById('modalIdUrl').value = id;
+        document.getElementById('modalNovoTitulo').value = tituloAtual;
 
-        navigator.clipboard.writeText(urlCompleta).then(() => {
-            // Um feedback visual simples (pode ser melhorado depois)
-            alert("Link copiado: " + urlCompleta);
-        });
+        var myModal = new bootstrap.Modal(
+            document.getElementById('modalRenomear')
+        );
+        myModal.show();
     }
 </script>
