@@ -10,4 +10,5 @@ public interface IUrlShortenerService
     Task<List<UrlMappings>> ObterLinksPorUsuarioAsync(string userId);
     Task<UrlMappings?> ObterDetalhesComLogsAsync(int id);
     Task<bool> ExcluirUrlAsync(int id, string userId);
+    Task<bool> AtualizarTituloAsync(int id, string novoTitulo, string userId);
 }

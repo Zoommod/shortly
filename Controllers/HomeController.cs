@@ -117,4 +117,26 @@ public class HomeController : Controller
 
         return RedirectToAction("Dashboard");
     }
+
+    [Authorize]
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Renomear(int id, string novoTitulo)
+    {
+        var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+        if(userId == null) return RedirectToAction("Login", "Account");
+
+        var sucesso = await _service.AtualizarTituloAsync(id, novoTitulo, userId);
+
+        if (sucesso)
+        {
+            TempData["Mensagem"] = "Link renomado com sucesso!";
+        }
+        else
+        {
+            TempData["Erro"] = "Erro ao renomear o link.";
+        }
+
+        return RedirectToAction("Dashboard");
+    }
 }

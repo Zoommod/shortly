@@ -16,4 +16,6 @@ public class UrlMappings
     public int ClickCount { get; set;} = 0;
     public string? UserId { get; set; }
     public  ICollection<UrlAcessLog> UrlAcessLogs { get; set; } = new List<UrlAcessLog>();
+    [MaxLength(100)]
+    public string? Title { get; set; }
 }

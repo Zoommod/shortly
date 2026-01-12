@@ -114,4 +114,16 @@ public class UrlShortenerService : IUrlShortenerService
         return true;
     }
 
+    public async Task<bool> AtualizarTituloAsync(int id, string novoTitulo, string userId)
+    {
+        var url = await _context.UrlMappings.FirstOrDefaultAsync(u => u.Id == id);
+
+        if(url == null || url.UserId != userId) return false;
+
+        url.Title = novoTitulo;
+        await _context.SaveChangesAsync();
+
+        return true;
+    }
+
 }
