@@ -72,7 +72,12 @@
                         @foreach (var log in Model.UrlAcessLogs.OrderByDescending(x => x.DataAcesso))
                         {
                             <tr>
-                                <td class="ps-4">@log.DataAcesso.ToString("dd/MM/yyyy HH:mm")</td>
+                                <td class="ps-4">
+                                    <span class="data-local" data-utc="@log.DataAcesso.ToString("yyyy-MM-ddTHH:mm:ssZ")">
+                                        @log.DataAcesso.ToString("dd/MM/yyyy HH:mm") UTC
+                                    </span>
+                                </td>
+                                
                                 <td>
                                     <span class="badge bg-secondary font-monospace">
                                         @(log.IpAddress ?? "Desconhecido")
@@ -97,7 +102,9 @@
                     <div class="card-body">
                         <div class="d-flex justify-content-between align-items-center mb-2">
                             <div class="fw-bold text-dark">
-                                📅 @log.DataAcesso.ToString("dd/MM") <small class="text-muted">@log.DataAcesso.ToString("HH:mm")</small>
+                                <span class="data-local" data-utc="@log.DataAcesso.ToString("yyyy-MM-ddTHH:mm:ssZ")">
+                                    @log.DataAcesso.ToString("dd/MM HH:mm") UTC
+                                </span>
                             </div>
                             <span class="badge bg-secondary font-monospace">
                                 @(log.IpAddress ?? "---")
@@ -113,3 +120,19 @@
         </div>
     }
 </div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const datas = document.querySelectorAll('.data-local');
+
+        datas.forEach(span => {
+            const utcString = span.getAttribute('data-utc');
+            if (utcString) {
+                const dataReal = new Date(utcString);
+                
+                span.innerText = dataReal.toLocaleDateString() + ' ' + 
+                                 dataReal.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            }
+        });
+    });
+</script>
